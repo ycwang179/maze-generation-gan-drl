@@ -2,7 +2,7 @@
 
 A PyTorch-based project exploring **Generative Adversarial Networks (GANs)**, **Deep Convolutional GANs (DCGANs)**, and **Deep Q-Learning (DQN)** for maze generation.
 
-The project demonstrates how generative deep-learning models and reinforcement-learning agents can be applied to structured spatial-generation problems while maintaining maze solvability.
+This project demonstrates how generative deep-learning models and reinforcement-learning agents can be applied to structured spatial-generation problems while maintaining maze solvability.
 
 ## Overview
 
@@ -28,7 +28,9 @@ The overall workflow is:
 
 **Maze Dataset → Binary Representation → Fully Connected GAN → DCGAN → DQN Maze Generator → Evaluation & Future Maze-Solving Framework**
 
-### 1. Maze Dataset
+---
+
+## 1. Maze Dataset
 
 The original project generated approximately **1,000 maze examples** for training.
 
@@ -41,9 +43,15 @@ An important distinction is that the original logical maze may be described at a
 
 The refactored code therefore detects the actual image dimensions dynamically instead of assuming that every training matrix is 8×8.
 
+### Example Training Mazes
+
+![Example Training Mazes](assets/training_mazes.png)
+
+These examples illustrate the structural diversity of the maze dataset used as the basis for generative modeling.
+
 ---
 
-## Fully Connected GAN
+## 2. Fully Connected GAN
 
 The first generative approach uses fully connected neural networks for both the generator and discriminator.
 
@@ -87,17 +95,25 @@ LeakyReLU activations and dropout are used for regularization.
 
 ### Motivation
 
-The fully connected GAN provides a relatively simple baseline, but it has limited ability to capture spatial relationships within maze structures.
+The fully connected GAN provides a relatively simple baseline and is useful for rapid prototyping.
+
+However, because the maze is treated as a flattened vector, the architecture has limited ability to explicitly capture local spatial relationships.
+
+### Generated Examples
+
+![Fully Connected GAN Generated Mazes](assets/fc_gan_generated.png)
+
+The fully connected GAN can reproduce basic maze-like structures, but the generated outputs may show repetitive patterns or weaker spatial organization.
 
 ---
 
-## DCGAN-Style Maze Generator
+## 3. DCGAN-Style Maze Generator
 
 The second configuration uses convolutional and transposed-convolutional layers.
 
 The generator first projects the latent vector into a spatial feature representation and then upsamples it into a maze image.
 
-The discriminator uses convolutional layers to extract spatial features from maze images.
+The discriminator uses convolutional layers to extract spatial features directly from maze images.
 
 ### Advantages
 
@@ -108,12 +124,18 @@ Compared with the fully connected architecture, the DCGAN-style model is better 
 - Producing more complex maze layouts
 - Representing two-dimensional image structure
 
+### Generated Examples
+
+![DCGAN Generated Mazes](assets/dcgan_generated.png)
+
+The DCGAN-style architecture produced visually stronger spatial structure and more complex maze configurations than the fully connected baseline.
+
 ### Training Considerations
 
 GAN training can be sensitive to:
 
 - Random initialization
-- Hyperparameters
+- Hyperparameter settings
 - Generator/discriminator imbalance
 - Training instability
 - Random seed
@@ -122,11 +144,11 @@ The refactored notebook therefore includes explicit training-loss diagnostics an
 
 ---
 
-## DQN-Based Maze Generation
+## 4. DQN-Based Maze Generation
 
 The project also explores maze generation as a reinforcement-learning problem using **Deep Q-Learning**.
 
-Instead of generating a complete maze in one forward pass, the DQN iteratively modifies the maze while receiving rewards based on the resulting structure.
+Instead of generating an entire maze in one forward pass, the DQN iteratively modifies the maze while receiving rewards based on the resulting structure.
 
 ### State
 
@@ -160,9 +182,7 @@ If the proposed modification makes the maze unsolvable:
 
 This prevents the DQN from improving its reward by generating invalid maze structures.
 
----
-
-## Reward Design
+### Reward Design
 
 The refactored DQN implementation uses the shortest valid path between the start and goal as part of the reward.
 
@@ -182,9 +202,15 @@ Reward = negative penalty
 
 This is more directly connected to maze complexity than simply counting the number of open cells.
 
+### Generated Examples
+
+![DQN Generated Mazes](assets/dqn_generated.png)
+
+The DQN-based approach treats maze generation as a sequential decision-making problem and explicitly preserves start-to-goal solvability during maze modification.
+
 ---
 
-## Maze Connectivity and Validation
+## 5. Maze Connectivity and Validation
 
 The original project used connected-component analysis during preprocessing.
 
@@ -194,14 +220,14 @@ The refactored code makes an important distinction:
 
 Therefore, the implementation uses more precise terminology:
 
-- **Connected component analysis** for image-level connectivity
+- **Connected-component analysis** for image-level connectivity
 - **BFS shortest-path search** for explicit start-to-goal solvability
 
 This distinction improves the interpretation of maze validity.
 
 ---
 
-## DQN Architecture
+## 6. DQN Architecture
 
 The DQN uses a fully connected neural network:
 
@@ -226,7 +252,7 @@ Training includes:
 
 ---
 
-## Reinforcement Learning Training Strategy
+## 7. Reinforcement Learning Training Strategy
 
 The cleaned implementation includes:
 
@@ -243,7 +269,7 @@ The DQN target calculation is performed without gradient propagation through the
 
 ---
 
-## Maze-Solving Framework
+## 8. Maze-Solving Framework
 
 The original project also considered a DQN-based maze-solving agent.
 
@@ -285,7 +311,7 @@ Potential evaluation metrics include:
 
 ---
 
-## Suggested Evaluation Metrics
+## 9. Suggested Evaluation Metrics
 
 Visual inspection alone is not sufficient for evaluating generated mazes.
 
@@ -317,7 +343,7 @@ Repeating experiments across multiple random seeds can help quantify model stabi
 
 ---
 
-## Key Technical Improvements
+## 10. Key Technical Improvements
 
 The portfolio version of the code was refactored from the original course notebook.
 
@@ -361,7 +387,7 @@ pip install -r requirements.txt
 jupyter notebook maze_generation_gan_drl.ipynb
 ```
 
-or open the notebook directly in JupyterLab, VS Code, or another compatible environment.
+You can also open the notebook directly in JupyterLab, VS Code, or another compatible environment.
 
 ---
 
@@ -377,7 +403,7 @@ RUN_DCGAN = False
 RUN_DQN = False
 ```
 
-To run a model:
+To run a model, change the corresponding flag:
 
 ```python
 RUN_FC_GAN = True
@@ -433,6 +459,10 @@ maze-generation-gan-drl/
 ├── requirements.txt
 │
 └── assets/
+    ├── training_mazes.png
+    ├── fc_gan_generated.png
+    ├── dcgan_generated.png
+    └── dqn_generated.png
 ```
 
 ### `maze_generation_gan_drl.ipynb`
@@ -457,7 +487,7 @@ Python package dependencies required to run the project.
 
 ### `assets/`
 
-Reserved for selected project visualizations and generated-maze examples.
+Contains selected training and generated-maze visualizations used in this README.
 
 ---
 
